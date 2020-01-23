@@ -1,0 +1,9 @@
+C:\Users\Constantin\Desktop\IKEA\IKEA\bin\Debug\IKEA.exe.config
+C:\Users\Constantin\Desktop\IKEA\IKEA\bin\Debug\IKEA.exe
+C:\Users\Constantin\Desktop\IKEA\IKEA\bin\Debug\IKEA.pdb
+C:\Users\Constantin\Desktop\IKEA\IKEA\obj\Debug\IKEA.csprojAssemblyReference.cache
+C:\Users\Constantin\Desktop\IKEA\IKEA\obj\Debug\IKEA.IKEA.resources
+C:\Users\Constantin\Desktop\IKEA\IKEA\obj\Debug\IKEA.Properties.Resources.resources
+C:\Users\Constantin\Desktop\IKEA\IKEA\obj\Debug\IKEA.csproj.GenerateResource.cache
+C:\Users\Constantin\Desktop\IKEA\IKEA\obj\Debug\IKEA.exe
+C:\Users\Constantin\Desktop\IKEA\IKEA\obj\Debug\IKEA.pdb
