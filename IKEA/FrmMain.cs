@@ -84,6 +84,13 @@ namespace IKEA
 
             foreach (Checkout checkout in this.ShopManager.Checkouts)
             {
+                foreach (Point point in checkout.WaitingPoints)
+                {
+                    SolidBrush br = new SolidBrush(Color.Azure);
+
+                    e.Graphics.FillEllipse(br, point.X, point.Y, 50, 50);
+                }
+
                 foreach (Client client in checkout.Clients)
                 {
                     SolidBrush br = new SolidBrush(client.MyColor);

@@ -7,3 +7,12 @@ C:\Users\Constantin\Desktop\IKEA\IKEA\obj\Debug\IKEA.Properties.Resources.resour
 C:\Users\Constantin\Desktop\IKEA\IKEA\obj\Debug\IKEA.csproj.GenerateResource.cache
 C:\Users\Constantin\Desktop\IKEA\IKEA\obj\Debug\IKEA.exe
 C:\Users\Constantin\Desktop\IKEA\IKEA\obj\Debug\IKEA.pdb
+C:\Users\Constantin\Documents\GitHub\ikea\IKEA\bin\Debug\IKEA.exe.config
+C:\Users\Constantin\Documents\GitHub\ikea\IKEA\bin\Debug\IKEA.exe
+C:\Users\Constantin\Documents\GitHub\ikea\IKEA\bin\Debug\IKEA.pdb
+C:\Users\Constantin\Documents\GitHub\ikea\IKEA\obj\Debug\IKEA.csprojAssemblyReference.cache
+C:\Users\Constantin\Documents\GitHub\ikea\IKEA\obj\Debug\IKEA.IKEA.resources
+C:\Users\Constantin\Documents\GitHub\ikea\IKEA\obj\Debug\IKEA.Properties.Resources.resources
+C:\Users\Constantin\Documents\GitHub\ikea\IKEA\obj\Debug\IKEA.csproj.GenerateResource.cache
+C:\Users\Constantin\Documents\GitHub\ikea\IKEA\obj\Debug\IKEA.exe
+C:\Users\Constantin\Documents\GitHub\ikea\IKEA\obj\Debug\IKEA.pdb

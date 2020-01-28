@@ -72,7 +72,20 @@ namespace IKEA
             {
                 if (client.IsAtCheckout())
                 {
-                    client.MyCheckout.NewClient(client);
+                    int index = client.MyCheckout.Clients.IndexOf(client);
+                    if (index == -1)
+                    {
+                        client.MyCheckout.NewClient(client);
+                        client.GoToPoint(client.MyCheckout.GetLastPositionOfQueue(), 5, 5);
+                    }
+                    else
+                    {
+                        client.GoToPoint(client.MyCheckout.GetPointForClient(client), 5, 5);
+                    }
+
+                }
+
+                if(client.Exit){
                     ToRemove.Add(client);
                 }
                 else

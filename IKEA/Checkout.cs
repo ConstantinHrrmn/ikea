@@ -25,11 +25,12 @@ namespace IKEA
             this.MyPanel = a_panel;
             this.IsOpen = false;
             this.clientSize = a_clientSize;
+            this.MakeWaitingPoints();
         }
 
         private void MakeWaitingPoints()
         {
-            for (int i = 0; i < MAX_CLIENT_IN_QUEUE + 1; i++)
+            for (int i = 0; i < MAX_CLIENT_IN_QUEUE + 3; i++)
             {
                 this.WaitingPoints.Add(new Point(this.MyPanel.Location.X, this.MyPanel.Location.Y - (this.clientSize * i) - 5));
             }    
@@ -87,15 +88,48 @@ namespace IKEA
 
         public void Second_Past()
         {
+            //this.MoveClients();
+
             if (this.StillHasClients())
             {
+                
                 this.TimeWitchClient++;
                 if (this.TimeWitchClient >= this.Clients[0].GetTimeAtCheckout())
                 {
                     this.TimeWitchClient = 0;
+                    this.Clients[0].Exit = true;
                     this.Clients.Remove(this.Clients[0]);
                     Console.WriteLine("CLIENT EXIT");
                 }
+            }
+        }
+
+        public Point GetLastPositionOfQueue()
+        {
+            int len = this.Clients.Count;
+            return this.WaitingPoints[len - 1];
+        }
+
+        public void MoveClients()
+        {
+            int index = 0;
+            foreach (Client client in this.Clients)
+            {
+                client.Position = this.WaitingPoints[index];
+                index++;
+            }
+        }
+
+        public Point GetPointForClient(Client client)
+        {
+            int index = this.Clients.IndexOf(client);
+            if (index == -1)
+            {
+                return this.GetLastPositionOfQueue();
+            }
+            else
+            {
+                return this.WaitingPoints[index];
             }
         }
     }

@@ -22,6 +22,7 @@ namespace IKEA
         private int[] _speed = new int[2];
 
         private bool done;
+        private bool _exit;
 
         public Client(int tis, int a_size)
         {
@@ -30,6 +31,7 @@ namespace IKEA
             this.Size = a_size;
             this.Speed[0] = IKEA.StaticRandom.Instance.Next(1, 11);
             this.Speed[1] = IKEA.StaticRandom.Instance.Next(1, 11);
+            this.Exit = false;
         }
 
         public Color TimeColor()
@@ -174,5 +176,6 @@ namespace IKEA
         public int[] Speed { get => _speed; set => _speed = value; }
         internal Checkout MyCheckout { get => _myCheckout; set => _myCheckout = value; }
         public bool Done { get => done; set => done = value; }
+        public bool Exit { get => _exit; set => _exit = value; }
     }
 }
