@@ -12,8 +12,8 @@ namespace IKEA
     {
         const int CHECKOUTS_AMOUNT = 9;
         const int MAX_CLIENT_IN_STORE = 100; // 200
-        const int MIN_TIME_IN_STORE = 30; // 30
-        const int MAX_TIME_IN_STORE = 300; // 300
+        const int MIN_TIME_IN_STORE = 10; // 30
+        const int MAX_TIME_IN_STORE = 20; // 300
         const int CLIENT_SIZE = 50;
         const int TIME_TO_OPEN_CHECKOUT = 30; // 30
 
@@ -72,7 +72,9 @@ namespace IKEA
             {
                 if (client.IsAtCheckout())
                 {
-                    int index = client.MyCheckout.Clients.IndexOf(client);
+                    client.MyCheckout.NewClient(client);
+                    ToRemove.Add(client);
+                    /*int index = client.MyCheckout.Clients.IndexOf(client);
                     if (index == -1)
                     {
                         client.MyCheckout.NewClient(client);
@@ -81,12 +83,8 @@ namespace IKEA
                     else
                     {
                         client.GoToPoint(client.MyCheckout.GetPointForClient(client), 5, 5);
-                    }
+                    }*/
 
-                }
-
-                if(client.Exit){
-                    ToRemove.Add(client);
                 }
                 else
                 {
@@ -121,12 +119,10 @@ namespace IKEA
 
             foreach (Client client1 in ToRemove)
             {
-                int index = this.Clients.IndexOf(client1);
-                if (index != -1)
-                {
-                    this.Clients.RemoveAt(index);
-                }
+                this.Clients.Remove(client1);
             }
+
+            ToRemove.Clear();
         }
 
         /// <summary>

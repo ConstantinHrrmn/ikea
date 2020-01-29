@@ -94,6 +94,7 @@ namespace IKEA
             {
                 
                 this.TimeWitchClient++;
+
                 if (this.TimeWitchClient >= this.Clients[0].GetTimeAtCheckout())
                 {
                     this.TimeWitchClient = 0;
