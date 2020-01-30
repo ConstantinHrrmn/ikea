@@ -14,6 +14,7 @@ namespace IKEA
     public partial class IKEA : Form
     {
         private Manager _shopManager;
+        int time = 0;
 
         public IKEA()
         {
@@ -39,6 +40,13 @@ namespace IKEA
             p.Size = new System.Drawing.Size(50, 50);
             p.TabIndex = 0;
 
+            Label lbl = new Label();
+            lbl.Text = "-";
+            lbl.Font = new Font(FontFamily.GenericSansSerif, 18);
+            lbl.ForeColor = Color.White;
+
+            p.Controls.Add(lbl);
+
             this.Controls.Add(p);
 
             return p;
@@ -46,6 +54,11 @@ namespace IKEA
 
         private void MainTimer_Tick(object sender, EventArgs e)
         {
+
+            Console.WriteLine(this.ShopManager.affluence(time) / 100);
+            time++;
+            if (time >= 24)
+                time = 0;
             // EVERY SECOND
             this.ShopManager.Client_Enter();
             this.ShopManager.One_Second_Is_Past();
@@ -54,7 +67,18 @@ namespace IKEA
         private void Refresh_Tick(object sender, EventArgs e)
         {
             // EVERY 0.24 SECOND
+            this.ShopManager.Client_Enter();
+            this.ShopManager.UpdateWainting();
             this.ShopManager.Clients_Move();
+            foreach (Checkout checkout in this.ShopManager.Checkouts)
+            {
+                checkout.MoveClients();
+            }
+            this.lbl_Clients.Text = string.Format("Clients: {0} / {1}", this.ShopManager.Clients.Count, this.ShopManager.GetMaxClients());
+            this.lbl_checkouts.Text = string.Format("Caisse: {0} / {1}",this.ShopManager.CountOpenCheckout(), this.ShopManager.Checkouts.Count);
+            this.lbl_Timer.Text = string.Format("Temps avant ouverture : {0} s", this.ShopManager.TimeToNextCheckoutOpening);
+            this.lblClientsToGo.Text = string.Format("Clients sans caisse : {0}", this.ShopManager.CountClientsWaiting().amount);
+            this.lblAvaibleSpaces.Text = string.Format("Places disponibles : {0}", this.ShopManager.CountClientsWaiting().avaibleSpaces);
             Invalidate();
         }
 
@@ -84,13 +108,6 @@ namespace IKEA
 
             foreach (Checkout checkout in this.ShopManager.Checkouts)
             {
-                /*foreach (Point point in checkout.WaitingPoints)
-                {
-                    SolidBrush br = new SolidBrush(Color.Azure);
-
-                    e.Graphics.FillEllipse(br, point.X, point.Y, 50, 50);
-                }*/
-
                 foreach (Client client in checkout.Clients)
                 {
                     SolidBrush br = new SolidBrush(client.MyColor);

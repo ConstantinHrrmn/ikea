@@ -36,6 +36,11 @@ namespace IKEA
             }    
         }
 
+        public int MaxClientAtCheckout()
+        {
+            return MAX_CLIENT_IN_QUEUE;
+        }
+
         public bool IsOpen { get => _open; set => _open = value; }
         public Panel MyPanel { get => _myPanel; set => _myPanel = value; }
         public List<Client> Clients { get => _clients; set => _clients = value; }
@@ -90,34 +95,49 @@ namespace IKEA
         {
             //this.MoveClients();
 
+
+
             if (this.StillHasClients())
             {
-                
                 this.TimeWitchClient++;
 
+                int time = (this.Clients[0].GetTimeAtCheckout() - this.TimeWitchClient);
+                //Console.WriteLine(time);
+
+                this.MyPanel.Controls[0].Text = time.ToString();
+
                 if (this.TimeWitchClient >= this.Clients[0].GetTimeAtCheckout())
-                {
+                {        
                     this.TimeWitchClient = 0;
                     this.Clients[0].Exit = true;
                     this.Clients.Remove(this.Clients[0]);
-                    Console.WriteLine("CLIENT EXIT");
+                    //Console.WriteLine("CLIENT EXIT");
                 }
             }
+            else
+                this.MyPanel.Controls[0].Text = "-";
+
         }
 
         public Point GetLastPositionOfQueue()
         {
             int len = this.Clients.Count;
-            return this.WaitingPoints[len - 1];
+            if (len == 0 )
+            {
+                return this.WaitingPoints[0];
+            }
+            else
+            {
+                return this.WaitingPoints[len];
+            }
+            
         }
 
         public void MoveClients()
         {
-            int index = 0;
             foreach (Client client in this.Clients)
             {
-                client.Position = this.WaitingPoints[index];
-                index++;
+                client.ComeToCheckout();
             }
         }
 
