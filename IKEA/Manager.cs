@@ -10,17 +10,21 @@ namespace IKEA
 {
     class Manager
     {
-        const int CHECKOUTS_AMOUNT = 9;
-        const int MAX_CLIENT_IN_STORE = 100; // 200
-        const int MIN_TIME_IN_STORE = 10; // 30
-        const int MAX_TIME_IN_STORE = 20; // 300
+        const int CHECKOUTS_AMOUNT = 12;
+        int MAX_CLIENT_IN_STORE = 100; // 200 Ce n'est pas un constante car la valeur change au fil des heures
+        const int MIN_TIME_IN_STORE = 30; // 30
+        const int MAX_TIME_IN_STORE = 300; // 300
         const int CLIENT_SIZE = 50;
         const int TIME_TO_OPEN_CHECKOUT = 30; // 30
+        const int SECONDS_IN_DAY = 300; // = 4,8 minutes
+
 
         private IKEA _mainframe;
 
         private bool _needNewCheckout = false;
-        private int TimeToNextCheckoutOpening = TIME_TO_OPEN_CHECKOUT;
+        public int TimeToNextCheckoutOpening = TIME_TO_OPEN_CHECKOUT;
+
+        private int _waitingForCheckout = 0;
 
         private List<Checkout> checkouts;
         private List<Client> _clients;
@@ -48,6 +52,7 @@ namespace IKEA
                 this.Checkouts.Add(new Checkout(p, CLIENT_SIZE));
                 x += p.Size.Width + espacement;
             }
+
         }
 
         /// <summary>
@@ -59,6 +64,23 @@ namespace IKEA
             {
                 this.Clients.Add(new Client(IKEA.StaticRandom.Instance.Next(MIN_TIME_IN_STORE, MAX_TIME_IN_STORE + 1), CLIENT_SIZE));
             }
+        }
+
+        public int GetMaxClients()
+        {
+            return MAX_CLIENT_IN_STORE;
+        }
+
+        public int CountOpenCheckout()
+        {
+            int amount = 0;
+
+            foreach (Checkout checkout in this.Checkouts)
+            {
+                amount += checkout.IsOpen ? 1 : 0;
+            }
+
+            return amount;
         }
 
         /// <summary>
@@ -89,7 +111,7 @@ namespace IKEA
                 else
                 {
                     if (client.WantToGo() && !client.Done && !client.HasCheckout())
-                        client.MyCheckout = this.GetMyCheckout();
+                        client.MyCheckout = this.GetMyCheckout(client);
 
                     if (client.WantToGo() && client.HasCheckout() && !client.Done)
                         client.OkToGo();
@@ -138,19 +160,82 @@ namespace IKEA
                 checkout.Second_Past();
             }
 
+            this.CloseCheckout();
             this.OpenningCheckout();
+
+        }
+
+        public void CloseCheckout()
+        {
+            if (this.CountClientsWaiting().avaibleSpaces-8 > this.CountClientsWaiting().waiting  && this.CountOpenCheckout() > 1)
+            {
+                Checkout bestCheckout = null;
+                foreach (Checkout check in this.Checkouts)
+                {
+                    if (check.IsOpen)
+                    {
+                        if (bestCheckout == null)
+                            bestCheckout = check;
+
+                        if (check.ClientsInQueue() < bestCheckout.ClientsInQueue())
+                            bestCheckout = check;
+                    }
+
+                }
+
+                int index = this.Checkouts.IndexOf(bestCheckout);
+                this.Checkouts[index].Close();
+            }
+        }
+
+        public void UpdateWainting()
+        {
+            this.WaitingForCheckout = CountClientsWaiting().waiting;
+        }
+
+        public (int waiting, int avaibleSpaces, int amount) CountClientsWaiting()
+        {
+            int amount = 0;
+            int avaibleSpaces = 0;
+            foreach (Checkout checkout in this.Checkouts)
+            {
+                if (checkout.Clients.Count < checkout.MaxClientAtCheckout() && checkout.IsOpen)
+                    avaibleSpaces += (checkout.MaxClientAtCheckout() - checkout.Clients.Count);
+            }
+
+            foreach (Client client in this.Clients)
+            {
+                if (client.WantToGo())
+                    amount++;
+            }
+
+            //Console.WriteLine("Clients to go : {0} || Avaible spaces : {1}", amount, avaibleSpaces);
+
+            return (amount - avaibleSpaces, avaibleSpaces, amount);
         }
 
         public void OpenningCheckout()
         {
-            if (this.NeedNewCheckout)
+            if (this.WaitingForCheckout > 0)
             {
-                Console.WriteLine(this.TimeToNextCheckoutOpening);
+                //Console.WriteLine(this.TimeToNextCheckoutOpening);
                 this.TimeToNextCheckoutOpening--;
 
                 if (this.TimeToNextCheckoutOpening <= 0)
                 {
-                    this.OpenNextCheckout();
+                    int amount = this.WaitingForCheckout / 5;
+
+                    if (amount > 1)
+                    {
+                        for (int i = 0; i < amount; i++)
+                            this.OpenNextCheckout();
+                    }
+                    else
+                    {
+                        this.OpenNextCheckout();
+                    }
+                    
+
                     this.TimeToNextCheckoutOpening = TIME_TO_OPEN_CHECKOUT;
                 }
             }
@@ -158,26 +243,26 @@ namespace IKEA
 
         public void OpenNextCheckout()
         {
+            List<Checkout> closed = new List<Checkout>();
             foreach(Checkout checkout in this.Checkouts)
             {
                 if (!checkout.IsOpen)
-                {
-                    checkout.Open();
-                    break;
-                }
-                    
+                    closed.Add(checkout); 
             }
+
+            if (closed.Count > 0)
+                closed[0].Open();
         }
 
         /// <summary>
         /// Searches the best avaible Checkout
         /// </summary>
         /// <returns>The best checkout</returns>
-        public Checkout GetMyCheckout()
+        public Checkout GetMyCheckout(Client client)
         {
             List<Checkout> openOnes = new List<Checkout>();
             Checkout best = null;
-
+            int bestdistance = -1;
 
             foreach (Checkout checkout in this.Checkouts)
             {
@@ -190,30 +275,34 @@ namespace IKEA
 
             foreach (Checkout checkoutopen in openOnes)
             {
-                if (best == null)
+                int distance = Convert.ToInt32(Math.Sqrt(Math.Pow(checkoutopen.GetLastPositionOfQueue().X - client.Position.X, 2) + Math.Pow(checkoutopen.GetLastPositionOfQueue().Y - client.Position.Y, 2)));
+                if (best == null && bestdistance == -1)
                 {
                     best = checkoutopen;
+                    bestdistance = distance;
                 }
-                else if (checkoutopen.ClientsInQueue() < best.ClientsInQueue())
+                else if (checkoutopen.ClientsInQueue() <= best.ClientsInQueue() && distance < bestdistance)
                 {
                     best = checkoutopen;
+                    bestdistance = distance;
                 }
             }
-
-            if (best == null)
-            {
-                this.NeedNewCheckout = true;
-            }
-            else
-            {
-                this.NeedNewCheckout = false;
-            }
-
             return best;
+        }
+
+        public void ChangeAffluence(int x)
+        {
+            int[] horaires = { 30, 40, 55, 80, 65, 50, 70, 90, 100, 60, 30 };
+
+            if (x >= 0 && x < horaires.Length)
+                this.MAX_CLIENT_IN_STORE = horaires[x];
+            else
+                this.MAX_CLIENT_IN_STORE = 0;
         }
         public IKEA Mainframe { get => _mainframe; set => _mainframe = value; }
         internal List<Checkout> Checkouts { get => checkouts; set => checkouts = value; }
         internal List<Client> Clients { get => _clients; set => _clients = value; }
         public bool NeedNewCheckout { get => _needNewCheckout; set => _needNewCheckout = value; }
+        public int WaitingForCheckout { get => _waitingForCheckout; set => _waitingForCheckout = value; }
     }
 }

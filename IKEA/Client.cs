@@ -74,38 +74,26 @@ namespace IKEA
 
         public void ComeToCheckout()
         {
-            Point destination = this.MyCheckout.MyPanel.Location;
+            int distanceToSlowDown = 12;
+            Point destination = this.MyCheckout.GetPointForClient(this);
+            Point vector = new Point(destination.X - this.Position.X, destination.Y - this.Position.Y);
+            var length = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
 
-            if (this.Position.X < destination.X)
+            if (length < distanceToSlowDown && length > 0)
+            {
+                Point unitVector = new Point(Convert.ToInt32(vector.X / length), Convert.ToInt32(vector.Y / length));
+                this.Position = new Point(this.Position.X + unitVector.X, this.Position.Y + unitVector.Y);
+            }
+            else if (length >= distanceToSlowDown)
             {
                 if (this.Speed[0] < 0)
                     this.Speed[0] *= -1;
-            }
-            else if(this.Position.X > destination.X)
-            {
-                if (this.Speed[0] > 0)
-                    this.Speed[0] *= -1;
-            }
-
-            if (this.Position.X > destination.X - this.Speed[0] && this.Position.X < destination.X)
-                this.Speed[0] = 1;
-            else if(this.Position.X < destination.X + this.Speed[0] && this.Position.X > destination.X)
-                this.Speed[0] = -1;
-            else if(this.Position.X == destination.X)
-                this.Speed[0] = 0;
-
-            if (this.Position.Y < destination.Y)
-            {
                 if (this.Speed[1] < 0)
                     this.Speed[1] *= -1;
-            }
 
-            if (this.Position.Y > destination.Y - this.Size*5)
-            {
-                this.Speed[1] = 0;
+                Point unitVector = new Point(Convert.ToInt32(vector.X / length), Convert.ToInt32(vector.Y / length));
+                this.Position = new Point(this.Position.X + unitVector.X * this.Speed[0], this.Position.Y + unitVector.Y * this.Speed[1]);
             }
-
-            this.Position = new Point(this.Position.X + this.Speed[0], this.Position.Y + this.Speed[1]);
         }
 
         public void GoToPoint(Point destination, int speedX, int speedY)
@@ -160,12 +148,20 @@ namespace IKEA
 
         public bool IsAtCheckout()
         {
-            return this.Speed[0] == 0 && this.Speed[1] == 0;
+            if (this.MyCheckout != null)
+                return this.Position == this.MyCheckout.GetPointForClient(this);
+            return false;
+
         }
 
         public int GetTimeAtCheckout()
         {
             return this.TimeAtCheckout;
+        }
+
+        public bool IsWaitingForCheckout()
+        {
+            return (WantToGo() && !HasCheckout());
         }
 
         public int TimeInStore { get => _timeInStore; set => _timeInStore = value; }
