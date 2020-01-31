@@ -10,19 +10,22 @@ namespace IKEA
 {
     class Client
     {
+        #region Variables privées
         private int _timeInStore;
         private int _timeAtCheckout;
         private Color _myColor;
 
         private Checkout _myCheckout;
 
-        Point _position = new Point(0, 0);
+        private Point _position = new Point(0, 0);
 
         private int _size;
         private int[] _speed = new int[2];
 
         private bool done;
         private bool _exit;
+        #endregion
+
 
         public Client(int tis, int a_size)
         {
@@ -34,40 +37,32 @@ namespace IKEA
             this.Exit = false;
         }
 
+        /// <summary>
+        /// Retourne la couleur en fonction du temps que passe le client dans le magasin
+        /// </summary>
+        /// <returns>La couleur du client</returns>
         public Color TimeColor()
         {
             if (this.TimeInStore > 200)
-            {
                 return Color.Black;
-            }
             else if(this.TimeInStore > 100)
-            {
                 return Color.Gray;
-            }
             else if(this.TimeInStore > 0)
-            {
                 return Color.LightGray;
-            }else if(this.TimeInStore == 0 && !this.HasCheckout())
-            {
+            else if(this.TimeInStore == 0 && !this.HasCheckout())
                 return Color.Red;
-            }
             else
-            {
                 return Color.Blue;
-            }
         }
+
 
         public void Move(Point maxBorder)
         {
             if (this.Position.X + this.Size > maxBorder.X || this.Position.X < 0)
-            {
                 this.Speed[0] *= -1;
-            }
 
             if (this.Position.Y + this.Size > maxBorder.Y || this.Position.Y < 0)
-            {
                 this.Speed[1] *= -1;
-            }
 
             this.Position = new Point(this.Position.X + this.Speed[0], this.Position.Y + this.Speed[1]);
         }
