@@ -36,6 +36,8 @@
             this.lbl_Timer = new System.Windows.Forms.Label();
             this.lblClientsToGo = new System.Windows.Forms.Label();
             this.lblAvaibleSpaces = new System.Windows.Forms.Label();
+            this.lblClock = new System.Windows.Forms.Label();
+            this.TClientSpawner = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // Refresh
@@ -110,12 +112,31 @@
             this.lblAvaibleSpaces.TabIndex = 4;
             this.lblAvaibleSpaces.Text = "Places disponibles : xx";
             // 
+            // lblClock
+            // 
+            this.lblClock.AutoSize = true;
+            this.lblClock.BackColor = System.Drawing.SystemColors.HighlightText;
+            this.lblClock.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lblClock.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblClock.Location = new System.Drawing.Point(1048, 9);
+            this.lblClock.Name = "lblClock";
+            this.lblClock.Size = new System.Drawing.Size(76, 29);
+            this.lblClock.TabIndex = 5;
+            this.lblClock.Text = "00:00";
+            // 
+            // TClientSpawner
+            // 
+            this.TClientSpawner.Enabled = true;
+            this.TClientSpawner.Interval = 250;
+            this.TClientSpawner.Tick += new System.EventHandler(this.TClientSpawner_Tick);
+            // 
             // IKEA
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightCyan;
             this.ClientSize = new System.Drawing.Size(1136, 787);
+            this.Controls.Add(this.lblClock);
             this.Controls.Add(this.lblAvaibleSpaces);
             this.Controls.Add(this.lblClientsToGo);
             this.Controls.Add(this.lbl_Timer);
@@ -142,6 +163,8 @@
         private System.Windows.Forms.Label lbl_Timer;
         private System.Windows.Forms.Label lblClientsToGo;
         private System.Windows.Forms.Label lblAvaibleSpaces;
+        private System.Windows.Forms.Label lblClock;
+        private System.Windows.Forms.Timer TClientSpawner;
     }
 }
 

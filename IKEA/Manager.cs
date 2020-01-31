@@ -11,7 +11,7 @@ namespace IKEA
     class Manager
     {
         const int CHECKOUTS_AMOUNT = 12;
-        const int MAX_CLIENT_IN_STORE = 100; // 200
+        int MAX_CLIENT_IN_STORE = 100; // 200 Ce n'est pas un constante car la valeur change au fil des heures
         const int MIN_TIME_IN_STORE = 30; // 30
         const int MAX_TIME_IN_STORE = 300; // 300
         const int CLIENT_SIZE = 50;
@@ -167,7 +167,7 @@ namespace IKEA
 
         public void CloseCheckout()
         {
-            if (this.CountClientsWaiting().avaibleSpaces > this.CountClientsWaiting().waiting  && this.CountOpenCheckout() > 1)
+            if (this.CountClientsWaiting().avaibleSpaces-8 > this.CountClientsWaiting().waiting  && this.CountOpenCheckout() > 1)
             {
                 Checkout bestCheckout = null;
                 foreach (Checkout check in this.Checkouts)
@@ -290,9 +290,14 @@ namespace IKEA
             return best;
         }
 
-        public int affluence(int x)
+        public void ChangeAffluence(int x)
         {
-            return (x - 2) * (x - 1) * (x + 1) * (x + 2);
+            int[] horaires = { 30, 40, 55, 80, 65, 50, 70, 90, 100, 60, 30 };
+
+            if (x >= 0 && x < horaires.Length)
+                this.MAX_CLIENT_IN_STORE = horaires[x];
+            else
+                this.MAX_CLIENT_IN_STORE = 0;
         }
         public IKEA Mainframe { get => _mainframe; set => _mainframe = value; }
         internal List<Checkout> Checkouts { get => checkouts; set => checkouts = value; }

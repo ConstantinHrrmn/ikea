@@ -14,7 +14,8 @@ namespace IKEA
     public partial class IKEA : Form
     {
         private Manager _shopManager;
-        int time = 0;
+        int hours = 0;
+        int minutes = 0;
 
         public IKEA()
         {
@@ -27,7 +28,7 @@ namespace IKEA
         private void IKEA_Load(object sender, EventArgs e)
         {
             this.ShopManager = new Manager(this);
-            
+            this.ShopManager.ChangeAffluence(this.hours);
         }
 
         public Panel Create_Checkout(string name, int x, int y)
@@ -54,31 +55,42 @@ namespace IKEA
 
         private void MainTimer_Tick(object sender, EventArgs e)
         {
-
-            Console.WriteLine(this.ShopManager.affluence(time) / 100);
-            time++;
-            if (time >= 24)
-                time = 0;
             // EVERY SECOND
             this.ShopManager.Client_Enter();
             this.ShopManager.One_Second_Is_Past();
+
+            this.minutes++;
+            if (this.minutes > 59)
+            {
+                this.minutes = 0;
+                this.hours++;
+            }
+
+            if (this.hours > 10)
+                this.hours = 0;
+
+            this.ShopManager.ChangeAffluence(this.hours);
+            this.lblClock.Text = string.Format("{0}:{1}", this.hours + 9, this.minutes);
         }
 
         private void Refresh_Tick(object sender, EventArgs e)
         {
             // EVERY 0.24 SECOND
-            this.ShopManager.Client_Enter();
+
+
+
             this.ShopManager.UpdateWainting();
             this.ShopManager.Clients_Move();
+
             foreach (Checkout checkout in this.ShopManager.Checkouts)
-            {
                 checkout.MoveClients();
-            }
+
             this.lbl_Clients.Text = string.Format("Clients: {0} / {1}", this.ShopManager.Clients.Count, this.ShopManager.GetMaxClients());
             this.lbl_checkouts.Text = string.Format("Caisse: {0} / {1}",this.ShopManager.CountOpenCheckout(), this.ShopManager.Checkouts.Count);
             this.lbl_Timer.Text = string.Format("Temps avant ouverture : {0} s", this.ShopManager.TimeToNextCheckoutOpening);
             this.lblClientsToGo.Text = string.Format("Clients sans caisse : {0}", this.ShopManager.CountClientsWaiting().amount);
             this.lblAvaibleSpaces.Text = string.Format("Places disponibles : {0}", this.ShopManager.CountClientsWaiting().avaibleSpaces);
+            
             Invalidate();
         }
 
@@ -115,6 +127,11 @@ namespace IKEA
                     e.Graphics.FillEllipse(br, client.Position.X, client.Position.Y, client.Size, client.Size);
                 }
             }
+        }
+
+        private void TClientSpawner_Tick(object sender, EventArgs e)
+        {
+            this.ShopManager.Client_Enter();
         }
     }
 }
