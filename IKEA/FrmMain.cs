@@ -1,4 +1,11 @@
-﻿using System;
+﻿/* AUTHOR   : Constantin Herrmann
+ * DATE     : 31.01.2020
+ * PROJECT  : IKEA
+ * CLASS    : FrmMain
+ * DESC.    : La form de l'application
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,10 +20,15 @@ namespace IKEA
 {
     public partial class IKEA : Form
     {
+        #region Variables privées
         private Manager _shopManager;
         int hours = 0;
         int minutes = 0;
+        #endregion
 
+        /// <summary>
+        /// Constructeur par défaut de la form
+        /// </summary>
         public IKEA()
         {
             InitializeComponent();
@@ -31,6 +43,13 @@ namespace IKEA
             this.ShopManager.ChangeAffluence(this.hours);
         }
 
+        /// <summary>
+        /// Creation du panel qui sera utiliser pour le checkout
+        /// </summary>
+        /// <param name="name">Le nom du panel</param>
+        /// <param name="x">La position x</param>
+        /// <param name="y">La position y</param>
+        /// <returns></returns>
         public Panel Create_Checkout(string name, int x, int y)
         {
             Panel p = new Panel();
@@ -55,9 +74,8 @@ namespace IKEA
 
         private void MainTimer_Tick(object sender, EventArgs e)
         {
-            // EVERY SECOND
-            this.ShopManager.Client_Enter();
-            this.ShopManager.One_Second_Is_Past();
+            // Chaque seconde 
+            this.ShopManager.One_Second_Is_Past(); // On averti le manager qu'une seconde à passer
 
             this.minutes++;
             if (this.minutes > 59)
@@ -69,18 +87,16 @@ namespace IKEA
             if (this.hours > 10)
                 this.hours = 0;
 
-            this.ShopManager.ChangeAffluence(this.hours);
+            this.ShopManager.ChangeAffluence(this.hours);   // Recherche l'affluence dans le magasin d'après l'heure
             this.lblClock.Text = string.Format("{0}:{1}", this.hours + 9, this.minutes);
         }
 
         private void Refresh_Tick(object sender, EventArgs e)
         {
-            // EVERY 0.24 SECOND
+            // Chaque 0.24 Secondes
 
-
-
-            this.ShopManager.UpdateWainting();
-            this.ShopManager.Clients_Move();
+            this.ShopManager.UpdateWainting();  // Met à jour la liste d'attente des clients
+            this.ShopManager.Clients_Move(); // Fait déplacer tous les clients
 
             foreach (Checkout checkout in this.ShopManager.Checkouts)
                 checkout.MoveClients();
@@ -111,6 +127,7 @@ namespace IKEA
 
         private void IKEA_Paint(object sender, PaintEventArgs e)
         {
+            // Dessiner tous les clients sur la form
             foreach (Client client in this.ShopManager.Clients)
             {
                 SolidBrush br = new SolidBrush(client.MyColor);
@@ -118,6 +135,7 @@ namespace IKEA
                 e.Graphics.FillEllipse(br, client.Position.X, client.Position.Y, client.Size, client.Size);
             }
 
+            // Dessiner tous les clients dans la file d'attente des caisses
             foreach (Checkout checkout in this.ShopManager.Checkouts)
             {
                 foreach (Client client in checkout.Clients)
